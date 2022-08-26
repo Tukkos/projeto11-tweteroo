@@ -34,7 +34,8 @@ app.post("/tweets", (req, res) => {
 })
 
 app.get("/tweets", (req, res) => {
-    res.send(tweets);
+    let timeline = tweets.slice(-10);
+    res.send(timeline);
 });
 
 app.listen(5000, () => console.log("Listen on 5000"))
