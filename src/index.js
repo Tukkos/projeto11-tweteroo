@@ -57,6 +57,4 @@ app.get("/tweets", (req, res) => {
     res.send(tweets.slice(-10));
 });
 
-app.listen(5000, () => console.log("Listen on 5000"))
-
-// http://localhost:5000/sign-up
+app.listen(5000, () => console.log("Listen on 5000"));
