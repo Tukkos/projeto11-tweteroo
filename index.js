@@ -2,7 +2,10 @@ import express from "express";
 import cors from "cors";
 
 const app = express();
-let login = [];
+app.use(cors());
+app.use(express.json());
+
+let login = {};
 let tweets = [
     {
 	    username: "bobesponja",
