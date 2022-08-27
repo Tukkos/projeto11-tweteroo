@@ -17,6 +17,10 @@ let users = [
     {
         username: "Jake",
 		avatar: "https://static3.tcdn.com.br/img/img_prod/906555/90_camiseta_hora_de_aventura_jake_o_cachorro_141_3_7a8466862e0c230ff5ff83e65fbf365a.jpg"
+    },
+    {
+        "username": "Finn",
+            "avatar": "http://pm1.narvii.com/6532/8f827cde3730def1787c8f900896b78501bc56d3_00.jpg"
     }
 ];
 let tweets = [
@@ -31,19 +35,36 @@ let tweets = [
     {
         username: "Jake",
 	    tweet: "Um belo dia pra dar um cochilo."
+    },
+    {
+        username: "Finn",
+        tweet: "Hora de aventura!!",
     }
 ];
 
 app.use(cors());
 
 app.post("/sign-up", (req, res) =>{
+    if(!req.body.username || !req.body.avatar) {
+        return res.status(400).send("Todos os campos são obrigatórios!");
+    }
     users.push(req.body);
-    res.send("OK");
+    res.status(201).send("OK");
 })
 
 app.post("/tweets", (req, res) => {
-    tweets.push(req.body);
-    res.send("OK");
+    const user = req.headers.user;
+
+    if(!user || !req.body.tweet) {
+        return res.status(400).send("Todos os campos são obrigatórios!");
+    }
+    tweets.push(
+        {
+            username: user,
+            tweet: req.body.tweet
+        }
+    );
+    res.status(201).send("OK");
 })
 
 app.get("/tweets", (req, res) => {
@@ -54,7 +75,34 @@ app.get("/tweets", (req, res) => {
             }
         }
     };
-    res.send(tweets.slice(-10));
+
+    const { page } = req.query;
+    if ( !page ) {
+        page = 1;
+    }
+    if (page < 1) {
+        return res.status(400).send("Informe uma página válida!");
+    }
+
+    res.send(tweets.slice(page * -10).reverse());
 });
+
+function filterUser (tweets, user) {
+    if (!user) {
+        return true;
+    }
+    return tweets.username === user;
+}
+
+app.get("/tweets/:username", (req, res) => {
+    const user = req.params.username;
+
+    const tweetsFrom = tweets.filter((tweets) => {
+        return (
+            filterUser(tweets, user)
+        );
+    });
+    res.send(tweetsFrom);
+})
 
 app.listen(5000, () => console.log("Listen on 5000"));
